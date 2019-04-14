@@ -219,11 +219,11 @@ const sketch = p => {
   }
 
   p.symShapes = function(name){
-    let shapeSize = new Array();
-    let leftShapesArray = new Array();
-    let rightShapesArray = new Array();
-    let topShapesArray = new Array();
-    let bottomShapesArray = new Array();
+    let shapeSize = [];
+    let leftShapesArray = [];
+    let rightShapesArray = [];
+    let topShapesArray = [];
+    let bottomShapesArray = [];
 
     for(var g = 0; g < 10; g++) {
       let size = Math.floor(Math.random() * 100) + 10;
@@ -234,7 +234,7 @@ const sketch = p => {
     var ac;
     var ad;
     var af;
-    
+
     for(var i = 0; i < name.length; i++) {
       ab = window.innerWidth/2;
       ac = ab/26;

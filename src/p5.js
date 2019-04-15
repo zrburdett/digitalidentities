@@ -4,17 +4,17 @@ const sketch = p => {
 
   p.setup = function() {
     // Create the canvas
-    p.createCanvas(window.innerWidth, window.innerHeight)
+    p.createCanvas(window.innerWidth, window.innerHeight);
+
+    p.gradientBackground(p.hexWithAlpha("#222222", 0.5), p.hexWithAlpha("#222222", 0.5));
 
     //p.symShapes("richard");
 
     //p.circGrid(40, p.color(0), p.color(255));
 
-    //p.gradCircle(window.innerWidth, window.innerHeight, 40, p.color(0), p.color(255));
+    //p.gradCircle(200, 200, 50, p.color(0), p.color(255));
 
     //p.scales(40, p.color(0), p.color(255));
-
-    //p.gradientBackground(p.hexWithAlpha("#000000", 0.5), p.hexWithAlpha("#ffffff", 0.5));
 
     //p.drawSquare(200, 200, 150, 45, 0, 255);
 

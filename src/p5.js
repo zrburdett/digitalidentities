@@ -6,8 +6,25 @@ const sketch = p => {
     // Create the canvas
     p.createCanvas(window.innerWidth, window.innerHeight)
 
-    p.symShapes("quelf");
+    //p.symShapes("richard");
 
+    //p.circGrid(40, p.color(0), p.color(255));
+
+    //p.gradCircle(window.innerWidth, window.innerHeight, 40, p.color(0), p.color(255));
+
+    //p.scales(40, p.color(0), p.color(255));
+
+    //p.gradientBackground(p.hexWithAlpha("#000000", 0.5), p.hexWithAlpha("#ffffff", 0.5));
+
+    //p.drawSquare(200, 200, 150, 45, 0, 255);
+
+    //p.drawTriangle(200, 200, 150, 200, 0, 0, 255);
+
+    //p.drawEqualTriangle(200, 200, 150, 0, 0, 255);
+
+    //p.drawNewTriangle(300, 200, 400, 200, 0, 0, 255);
+
+    //p.polygon(200, 200, 150, 6);
   }
 
   p.draw = function() {
@@ -76,7 +93,6 @@ const sketch = p => {
 
   p.circGrid = function(r, c1, c2) {
     let y = 0
-
     while (y < p.height + r) {
       let x = 0
       while (x < p.width) {
@@ -88,15 +104,6 @@ const sketch = p => {
         x = x + r * 2
       }
       y = y + r * 2
-    }
-  }
-
-  p.createGradient = function(x, y, w, h, c1, c2) {
-    for (let i = x; i <= x + w; i++) {
-      let inter = p.map(i, x, x + w, 0, 1)
-      let c = p.lerpColor(c1, c2, inter)
-      p.stroke(c)
-      p.line(i, y, i, y + h)
     }
   }
 

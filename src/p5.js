@@ -6,7 +6,7 @@ const sketch = p => {
     // Create the canvas
     p.createCanvas(window.innerWidth, window.innerHeight);
 
-    p.gradientBackground(p.hexWithAlpha("#222222", 0.5), p.hexWithAlpha("#222222", 0.5));
+    //p.gradientBackground(p.hexWithAlpha("#222222", 0.5), p.hexWithAlpha("#222222", 0.5));
 
     //p.symShapes("richard");
 

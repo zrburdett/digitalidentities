@@ -1,10 +1,38 @@
+import firebase from 'firebase';
 
 const sketch = p => {
-  
+  let database;
+  let ref;
+  let storage;
+  let easyIDvar;
 
   p.setup = function() {
     // Create the canvas
     p.createCanvas(window.innerWidth, window.innerHeight);
+
+    // Initialize Firebase
+    let config = {
+        apiKey: "AIzaSyCLCtrfymafzgxNQCJpUVSEnmWiZAgbP84",
+        authDomain: "digital-identities.firebaseapp.com",
+        databaseURL: "https://digital-identities.firebaseio.com",
+        projectId: "digital-identities",
+        storageBucket: "digital-identities.appspot.com",
+        messagingSenderId: "834438338603"
+    };
+
+    firebase.initializeApp(config);
+
+    // Create a database variable from firebase
+    database = firebase.database();
+
+    // Create a storage variable for firebase
+    storage = firebase.storage();
+
+    firebase.auth().signInAnonymously()
+      .then( () => {
+        console.log("User " + firebase.auth().currentUser.uid + " signed in.");
+        p.submitData();
+      });
 
     //p.gradientBackground(p.hexWithAlpha("#222222", 0.5), p.hexWithAlpha("#222222", 0.5));
 
@@ -25,10 +53,82 @@ const sketch = p => {
     //p.drawNewTriangle(300, 200, 400, 200, 0, 0, 255);
 
     //p.polygon(200, 200, 150, 6);
+
+    // Log user out of firebase
+    setTimeout(() => {
+      firebase.auth().signOut();
+      console.log("Anonymous user logged out.");
+    }, 1000);
   }
 
   p.draw = function() {
 
+  }
+
+  // Sends data to firebase
+  p.submitData = function() {
+    // Reference data from the database
+    ref = database.ref('users');
+
+    // Grab the data from the database
+    ref.on('value', p.assignEasyID, p.errData);
+
+    console.log(easyIDvar);
+
+    let data = {
+      easyID: easyIDvar
+      // question1: input1.value(),
+      // question2: input2.value(),
+      // question3: input3.value()
+    };
+
+    // See what's being sent
+    console.log("Following data is being sent to the database:");
+    console.log(data);
+
+    // Create a reference to the database
+    ref = database.ref('users/' + firebase.auth().currentUser.uid );
+
+    // Push the data to the database
+    ref.push(data);
+
+    // Confirm send
+    console.log("Data sent.");
+  }
+
+  p.assignEasyID = function(data) {
+    let results = data.val();
+    let keys = Object.keys(results);
+    console.log("Current ID");
+    console.log(keys.length);
+    let keyLength = keys.length;
+    easyIDvar = keys.length;
+  }
+
+  // Throw an error if data can't be gotten
+  p.errData = function(err) {
+    console.log('Error!');
+    console.log(err);
+  }
+
+  // Snag the canvas element and send it to firebase
+  p.uploadImg = function() {
+    // Create storage reference in the database
+    var storageRef = storage.ref('test/' + firebase.auth().currentUser.uid);
+
+    // Select the canvas in the document
+    const canvas = document.getElementById('defaultCanvas0');
+
+    // Convert the canvas into a blob and upload it using the storageRef
+    canvas.toBlob(function(canvasBlob){
+      // Upload the image using the newly created blob
+      storageRef.put(canvasBlob);
+
+      // Confirmations
+      console.log("Sending the following blob:");
+      console.log(canvasBlob);
+      console.log("Blob location: " + storageRef);
+    });
   }
 
   p.alexMockupPlaceholder = function() {
@@ -37,7 +137,6 @@ const sketch = p => {
     let color3 = p.color(98, 249, 98)
     let color4 = p.color(255, 255, 100)
     p.scales(25, color1, color2)
-    // circGrid(25,color1,color2);
     p.noFill()
     p.stroke(255)
     p.strokeWeight(2)
@@ -49,8 +148,8 @@ const sketch = p => {
     p.ellipse((p.width / 4) * 3, 250, 150)
   }
 
+  // Creates a gradient circle with an offset stroke
   p.gradCircle = function(x, y, r, c1, c2) {
-    //const gradCircleR = 200;
     const lineW = 1
     const lines = (r * 2) / lineW
 
@@ -68,6 +167,7 @@ const sketch = p => {
     p.ellipse(x + r + 20, y + r + 20, r * 2)
   }
 
+  // Creates a scale background of overlapping circles
   p.scales = function(r, c1, c2) {
     let y = 0
     let x = 0
@@ -91,6 +191,7 @@ const sketch = p => {
     }
   }
 
+  // Creates a grid of circles
   p.circGrid = function(r, c1, c2) {
     let y = 0
     while (y < p.height + r) {
@@ -107,15 +208,17 @@ const sketch = p => {
     }
   }
 
+  // Creates a smooth gradient background from left to right
   p.gradientBackground = function(from, to) {
   for(var i = 0; i < window.innerWidth; i++) {
-        p.noStroke();
-        p.fill(p.lerpColor(p.color(from), p.color(to), (i/window.innerHeight)));
-        p.rectMode(p.CORNER);
-        p.rect(i, 0, 1, window.innerHeight);
+      p.noStroke();
+      p.fill(p.lerpColor(p.color(from), p.color(to), (i/window.innerHeight)));
+      p.rectMode(p.CORNER);
+      p.rect(i, 0, 1, window.innerHeight);
     }
   }
 
+  // Returns an rgb or rgba color
   p.hexWithAlpha = function(hex, alpha) {
     var r = parseInt(hex.slice(1, 3), 16),
     g = parseInt(hex.slice(3, 5), 16),
@@ -128,6 +231,7 @@ const sketch = p => {
     }
   }
 
+  // Draws a square
   p.drawSquare = function(xCoord, yCoord, size, rotationAngle, from, to) {
     p.push();
     p.translate(xCoord, yCoord);
@@ -139,41 +243,25 @@ const sketch = p => {
       p.rectMode(p.CORNER);
       p.rect(i-(size/2), 0-(size/2), 1, size);
     }
-
-    // Draw axis
-    p.stroke(255);
-    p.line(0, 0, size, 0);
-    p.stroke(0);
-    p.line(0, 0, 0, size);
-    p.fill(0);
-    p.ellipse(0, 0, 5, 5);
-
     p.pop();
   }
 
+  // Draws a triangle based on two side lengths
   p.drawTriangle = function(xCoord, yCoord, lengthSideA, lengthSideB, rotationAngle, from, to) {
     p.push();
     p.translate(xCoord, yCoord);
     p.angleMode(p.DEGREES);
     p.rotate(rotationAngle);
     for(var i = 0; i < lengthSideA; i++) {
-        p.noStroke();
-        p.rectMode(p.CORNER);
-        p.fill(p.lerpColor(p.color(from), p.color(to), i/lengthSideA));
-        p.rect(i, 0, 1, lengthSideB-(p.map(i, 0, lengthSideA, 0, lengthSideB)));
+      p.noStroke();
+      p.rectMode(p.CORNER);
+      p.fill(p.lerpColor(p.color(from), p.color(to), i/lengthSideA));
+      p.rect(i, 0, 1, lengthSideB-(p.map(i, 0, lengthSideA, 0, lengthSideB)));
     }
-
-    // Draw axis
-    p.stroke(255);
-    p.line(0, 0, lengthSideA, 0);
-    p.stroke(0);
-    p.line(0, 0, 0, lengthSideB);
-    p.fill(0);
-    p.ellipse(0, 0, 5, 5);
-
     p.pop();
   }
 
+  // Draws an equilateral triangle
   p.drawEqualTriangle = function(xCoord, yCoord, sideLength, rotationAngle, from, to) {
     p.push();
     p.translate(xCoord, yCoord);
@@ -181,67 +269,55 @@ const sketch = p => {
     p.rotate(rotationAngle);
     var lengthSideB = (sideLength*p.sqrt(3))/2;
     for(var i = 0; i < lengthSideB; i++) {
-        p.noStroke();
-        p.rectMode(p.CENTER);
-        p.fill(p.lerpColor(p.color(from), p.color(to), i/lengthSideB));
-        p.rect(i, 0, 1, (p.map(i, 0, lengthSideB, sideLength, 0)));
+      p.noStroke();
+      p.rectMode(p.CENTER);
+      p.fill(p.lerpColor(p.color(from), p.color(to), i/lengthSideB));
+      p.rect(i, 0, 1, (p.map(i, 0, lengthSideB, sideLength, 0)));
     }
-
-    // Draw axis
-    p.stroke(255);
-    p.line(0, 0, sideLength, 0);
-    p.stroke(0);
-    p.line(0, 0, 0, sideLength);
-    p.fill(0);
-    p.ellipse(0, 0, 5, 5);
-
     p.pop();
   }
 
+  // Draws a right triangle based on length of base and height
   p.drawNewTriangle = function(xCoord, yCoord, triangleLength, triangleHeight, rotationAngle, from, to) {
     p.push();
     p.translate(xCoord, yCoord);
     p.angleMode(p.DEGREES);
     p.rotate(rotationAngle);
     for(var i = 0; i < triangleLength; i++) {
-        p.noStroke();
-        p.rectMode(p.CORNER);
-        p.fill(p.lerpColor(p.color(from), p.color(to), i/triangleLength));
-        if(i < triangleLength/2) {
-            p.rect(i-triangleLength/2, 0, 1, (p.map(i, 0, triangleLength, 0, triangleHeight*2)));
-        } else {
-            p.rect(i-triangleLength/2, 0, 1, (p.map(i, 0, triangleLength, triangleHeight*2, 0)));
-        }
+      p.noStroke();
+      p.rectMode(p.CORNER);
+      p.fill(p.lerpColor(p.color(from), p.color(to), i/triangleLength));
+      if(i < triangleLength/2) {
+          p.rect(i-triangleLength/2, 0, 1, (p.map(i, 0, triangleLength, 0, triangleHeight*2)));
+      } else {
+          p.rect(i-triangleLength/2, 0, 1, (p.map(i, 0, triangleLength, triangleHeight*2, 0)));
+      }
     }
-
-    // Draw axis
-    p.stroke(255);
-    p.line(0, 0, triangleLength, 0);
-    p.stroke(0);
-    p.line(0, 0, 0, triangleHeight);
-    p.fill(0);
-    p.ellipse(0, 0, 5, 5);
-
     p.pop();
   }
 
+  // Creates a variety of shapes reflected around the center of the window based on a name input
   p.symShapes = function(name){
+    // Initializes arrays that will hold shapeSize and the positions of the polygons
     let shapeSize = [];
     let leftShapesArray = [];
     let rightShapesArray = [];
     let topShapesArray = [];
     let bottomShapesArray = [];
 
-    for(var g = 0; g < 10; g++) {
-      let size = Math.floor(Math.random() * 100) + 10;
-      shapeSize.push(size);
-    }
-
+    // Grab necessary data for shape placement and shove it into a variable
     var halfWidth = window.innerWidth/2;
     var halfHeight = window.innerHeight/2;
     var gridWidth26 = halfWidth/26;
     var gridHeight26 = halfHeight/26;
 
+    // Determine the size of the polygons
+    for(var g = 0; g < 10; g++) {
+      let size = Math.floor(Math.random() * 100) + 10;
+      shapeSize.push(size);
+    }
+
+    // Toss data into the shape arrays
     for(var i = 0; i < name.length; i++) {
       if(name.charAt(i)==='a') {
         leftShapesArray.push(gridWidth26);
@@ -401,17 +477,19 @@ const sketch = p => {
       }
     }
 
-    for(var b = 0; b < leftShapesArray.length; b++) {
-      p.fill(0,0,0);
+    // Draw polygons based on the data in the arrays
+    for(var i = 0; i < leftShapesArray.length; i++) {
+      p.fill(0, 0, 0);
       p.push();
-      p.polygon(leftShapesArray[b], topShapesArray[b], shapeSize[b], name.length);
-      p.polygon(rightShapesArray[b], topShapesArray[b], shapeSize[b], name.length);
-      p.polygon(leftShapesArray[b], bottomShapesArray[b], shapeSize[b], name.length);
-      p.polygon(rightShapesArray[b], bottomShapesArray[b], shapeSize[b], name.length);
+      p.polygon(leftShapesArray[i], topShapesArray[i], shapeSize[i], name.length);
+      p.polygon(rightShapesArray[i], topShapesArray[i], shapeSize[i], name.length);
+      p.polygon(leftShapesArray[i], bottomShapesArray[i], shapeSize[i], name.length);
+      p.polygon(rightShapesArray[i], bottomShapesArray[i], shapeSize[i], name.length);
       p.pop();
     }
   }
 
+  // Creates a polygon based on radius and number of vertex points
   p.polygon = function(x, y, radius, nPoints) {
     let angle = p.TWO_PI / nPoints;
     p.fill(0);

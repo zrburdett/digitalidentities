@@ -28,9 +28,15 @@ const sketch = p => {
     // Create a storage variable for firebase
     storage = firebase.storage();
 
+    // Reference data from the database
+    ref = database.ref('users');
+
+    // Grab the data from the database
+    ref.on('value', p.assignEasyID, p.errData);
+
     firebase.auth().signInAnonymously()
       .then( () => {
-        console.log("User " + firebase.auth().currentUser.uid + " signed in.");
+        console.log("User " + firebase.auth().currentUser.uid + " signed in with an easyID of " + easyIDvar);
         p.submitData();
       });
 
@@ -57,7 +63,7 @@ const sketch = p => {
     // Log user out of firebase
     setTimeout(() => {
       firebase.auth().signOut();
-      console.log("Anonymous user logged out.");
+      console.log("User " + firebase.auth().currentUser.uid + " has logged out.");
     }, 1000);
   }
 
@@ -67,19 +73,8 @@ const sketch = p => {
 
   // Sends data to firebase
   p.submitData = function() {
-    // Reference data from the database
-    ref = database.ref('users');
-
-    // Grab the data from the database
-    ref.on('value', p.assignEasyID, p.errData);
-
-    console.log(easyIDvar);
-
     let data = {
       easyID: easyIDvar
-      // question1: input1.value(),
-      // question2: input2.value(),
-      // question3: input3.value()
     };
 
     // See what's being sent
@@ -99,8 +94,6 @@ const sketch = p => {
   p.assignEasyID = function(data) {
     let results = data.val();
     let keys = Object.keys(results);
-    console.log("Current ID");
-    console.log(keys.length);
     let keyLength = keys.length;
     easyIDvar = keys.length;
   }
@@ -114,7 +107,7 @@ const sketch = p => {
   // Snag the canvas element and send it to firebase
   p.uploadImg = function() {
     // Create storage reference in the database
-    var storageRef = storage.ref('test/' + firebase.auth().currentUser.uid);
+    let storageRef = storage.ref('test/' + firebase.auth().currentUser.uid);
 
     // Select the canvas in the document
     const canvas = document.getElementById('defaultCanvas0');

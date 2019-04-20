@@ -28,21 +28,21 @@ const sketch = p => {
     // Create a storage variable for firebase
     storage = firebase.storage();
 
-    // Reference data from the database
-    ref = database.ref('users');
+    // // Reference data from the database
+    // ref = database.ref('users');
 
-    // Grab the data from the database
-    ref.on('value', p.assignEasyID, p.errData);
+    // // Grab the data from the database
+    // ref.on('value', p.assignEasyID, p.errData);
 
-    firebase.auth().signInAnonymously()
-      .then( () => {
-        console.log("User " + firebase.auth().currentUser.uid + " signed in with an easyID of " + easyIDvar);
-        p.submitData();
-      });
+    // firebase.auth().signInAnonymously()
+    //   .then( () => {
+    //     console.log("User " + firebase.auth().currentUser.uid + " signed in with an easyID of " + easyIDvar);
+    //     p.submitData();
+    //   });
 
     //p.gradientBackground(p.hexWithAlpha("#222222", 0.5), p.hexWithAlpha("#222222", 0.5));
 
-    p.symShapes("richard");
+    // p.symShapes("richard");
 
     //p.circGrid(40, p.color(0), p.color(255));
 
@@ -60,69 +60,103 @@ const sketch = p => {
 
     //p.polygon(200, 200, 150, 6);
 
-    // Log user out of firebase
-    setTimeout(() => {
-      firebase.auth().signOut();
-      console.log("User " + firebase.auth().currentUser.uid + " has logged out.");
-    }, 1000);
+
+    // QUIZ ANSWERS
+    let qFirstName = "Frank";
+    
+    let qLastName = "Furter";
+
+    let qBirthMonth = "may";
+
+    let qWhereLive = "city";
+    // let qWhereLive = "country";
+    // let qWhereLive = "suburbs";
+
+    let qPizza = 1;
+
+    let qSleep = "morning person";
+    // let qSleep = "night owl";
+    // let qSleep = "neither";
+    
+    let qPet = "cats";
+    // let qPet = "dogs";
+    // let qPet = "both";
+    // let qPet = "neither";
+
+    let qMess = 1;
+
+    let qVert = 1;
+
+    let qPlan = "methodical";
+    // let qPlan = "spontaneous";
+
+    
+
+
+
+    // // Log user out of firebase
+    // setTimeout(() => {
+    //   firebase.auth().signOut();
+    //   console.log("User " + firebase.auth().currentUser.uid + " has logged out.");
+    // }, 1000);
   }
 
   p.draw = function() {
 
   }
 
-  // Sends data to firebase
-  p.submitData = function() {
-    let data = {
-      easyID: easyIDvar
-    };
+  // // Sends data to firebase
+  // p.submitData = function() {
+  //   let data = {
+  //     easyID: easyIDvar
+  //   };
 
-    // See what's being sent
-    console.log("Following data is being sent to the database:");
-    console.log(data);
+  //   // See what's being sent
+  //   console.log("Following data is being sent to the database:");
+  //   console.log(data);
 
-    // Create a reference to the database
-    ref = database.ref('users/' + firebase.auth().currentUser.uid );
+  //   // Create a reference to the database
+  //   ref = database.ref('users/' + firebase.auth().currentUser.uid );
 
-    // Push the data to the database
-    ref.push(data);
+  //   // Push the data to the database
+  //   ref.push(data);
 
-    // Confirm send
-    console.log("Data sent.");
-  }
+  //   // Confirm send
+  //   console.log("Data sent.");
+  // }
 
-  p.assignEasyID = function(data) {
-    let results = data.val();
-    let keys = Object.keys(results);
-    let keyLength = keys.length;
-    easyIDvar = keys.length;
-  }
+  // p.assignEasyID = function(data) {
+  //   let results = data.val();
+  //   let keys = Object.keys(results);
+  //   let keyLength = keys.length;
+  //   easyIDvar = keys.length;
+  // }
 
-  // Throw an error if data can't be gotten
-  p.errData = function(err) {
-    console.log('Error!');
-    console.log(err);
-  }
+  // // Throw an error if data can't be gotten
+  // p.errData = function(err) {
+  //   console.log('Error!');
+  //   console.log(err);
+  // }
 
-  // Snag the canvas element and send it to firebase
-  p.uploadImg = function() {
-    // Create storage reference in the database
-    let storageRef = storage.ref('test/' + firebase.auth().currentUser.uid);
+  // // Snag the canvas element and send it to firebase
+  // p.uploadImg = function() {
+  //   // Create storage reference in the database
+  //   let storageRef = storage.ref('test/' + firebase.auth().currentUser.uid);
 
-    // Select the canvas in the document
-    const canvas = document.getElementById('defaultCanvas0');
+  //   // Select the canvas in the document
+  //   const canvas = document.getElementById('defaultCanvas0');
 
-    // Convert the canvas into a blob and upload it using the storageRef
-    canvas.toBlob(function(canvasBlob){
-      // Upload the image using the newly created blob
-      storageRef.put(canvasBlob);
+  //   // Convert the canvas into a blob and upload it using the storageRef
+  //   canvas.toBlob(function(canvasBlob){
+  //     // Upload the image using the newly created blob
+  //     storageRef.put(canvasBlob);
 
-      // Confirmations
-      console.log("Sending the following blob:");
-      console.log(canvasBlob);
-      console.log("Blob location: " + storageRef);
-    });
-  }
+  //     // Confirmations
+  //     console.log("Sending the following blob:");
+  //     console.log(canvasBlob);
+  //     console.log("Blob location: " + storageRef);
+  //   });
+  // }
 
   p.alexMockupPlaceholder = function() {
     let color1 = p.color(174, 21, 255)
@@ -471,7 +505,7 @@ const sketch = p => {
     }
 
     // Draw polygons based on the data in the arrays
-    for(var i = 0; i < leftShapesArray.length; i++) {
+    for(let i = 0; i < leftShapesArray.length; i++) {
       p.fill(0, 0, 0);
       p.push();
       p.polygon(leftShapesArray[i], topShapesArray[i], shapeSize[i], name.length);

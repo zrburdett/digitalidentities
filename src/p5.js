@@ -5,10 +5,11 @@ const sketch = p => {
   let ref;
   let storage;
   let easyIDvar;
+  let img;
 
   p.setup = function() {
     // Create the canvas
-    p.createCanvas(window.innerWidth, window.innerHeight);
+    p.createCanvas(window.innerWidth/4, window.innerHeight/4);
 
     // Initialize Firebase
     let config = {
@@ -27,6 +28,10 @@ const sketch = p => {
 
     // Create a storage variable for firebase
     storage = firebase.storage();
+
+    console.log("Why is this value " + p.getUIDfromEasyID("3") + "?");
+    
+    // p.addGalleryImage(shit);
 
     // // Reference data from the database
     // ref = database.ref('users');
@@ -103,6 +108,50 @@ const sketch = p => {
 
   p.draw = function() {
 
+  }
+
+  p.getUIDfromEasyID = function(easyID) {
+    let returnedKey = "test";
+    ref = database.ref('users');
+    ref.on('value', function(data) {
+      let results = data.val();
+      let keys = Object.keys(results);
+      if (easyID <= keys.length) {
+        for (let i = 0; i < keys.length; i++) {
+          ref = database.ref("users/" + keys[i]);
+          ref
+            .orderByChild("easyID")
+            .equalTo(parseInt(easyID))
+            .on("value", snap => {
+              if (snap.val() !== null) {
+                console.log("Grabbing UID for easyID: " + easyID);
+                const val = snap.val();
+                console.log("Returning UID: " + ref.key);
+                returnedKey = ref.key;
+                return returnedKey;
+              }
+            });
+        }
+      } else {
+        console.log("Error getting UID.");
+      }
+    });
+  }
+
+  p.addGalleryImage = function(uid) {
+    let x = document.createElement("IMG");
+
+    storage.ref('test/' + uid).getDownloadURL().then(function(fbURL) {
+      let url = fbURL;
+
+      x.setAttribute("src", url);
+    });
+
+    x.setAttribute("width", "304");
+
+    x.setAttribute("height", "228");
+
+    document.body.appendChild(x);
   }
 
   // // Sends data to firebase

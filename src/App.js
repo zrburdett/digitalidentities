@@ -7,6 +7,9 @@ class App extends Component {
     return (
       <div id="app">
         <P5Wrapper sketch={sketch} rotation={200} />
+        <div>
+        	<img src="https://zachburdett.com/assets/thumbnails/wayfinder.jpg" />
+        </div>
       </div>
     )
   }

@@ -1,0 +1,21 @@
+#title {
+    text-align: center;
+    font-size: 24px;
+    text-transform: uppercase;
+    font-weight: bold;
+    padding-top: 20px;
+}
+
+#examples {
+    display: flex;
+    justify-content: center;
+    padding-top: 50px;
+}
+
+ul {
+    list-style-type: circle;
+}
+
+a {
+    text-decoration: none;
+}
